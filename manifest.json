@@ -1,0 +1,15 @@
+{
+    "name": "Spotify now playing bar to top",
+    "version": "1.0",
+    "description": "Re-locates the Spotify web player's 'now playing bar' to the top of the page.",
+    "permissions": ["tabs", "*://open.spotify.com/*"],
+    "content_scripts": [
+        {
+            "matches": ["*://open.spotify.com/*"],
+            "js": ["content.js"],
+            "run_at": "document_end"
+        }
+    ],
+    "web_accessible_resources": ["script.js"],
+    "manifest_version": 2
+}
