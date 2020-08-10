@@ -48,8 +48,9 @@ function fixSpacing(view = "column") {
 
     nowPlayingDetails.style.flexGrow = 1;
 
-    nowPlayingCenter.style.margin = "1em 0";
+    nowPlayingCenter.style.margin = "0.5em 0";
     nowPlayingCenter.style.width = "auto";
+    nowPlayingCenter.style.maxWidth = "none";
 
     nowPlayingRight.style.width = "auto";
     nowPlayingRight.style.justifyContent = "center";
