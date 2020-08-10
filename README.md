@@ -19,5 +19,5 @@ Create a chrome shortcut to spotify and select 'Open as window' for optimal effe
 1. Give the shortcut any name you like, and ensure `Open as window` is checked, then hit `Create`.
 1. You should now have a desktop shortcut which will open a barebones chrome window directly to open.spotify.com in a dedicated window, which applies the extension if loaded correctly, and will persist window dimensions across sessions.  
 
-### Disclaimer
+#### Disclaimer
 *Use this software at your own risk. If you have any concerns about the behaviour of this software, I encourage you to view the source code. This is a rather innocent extension that does little more than manipulate position & style of existing DOM elements on the spotify web player.*
