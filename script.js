@@ -1,39 +1,93 @@
-function selectNowPlayingBar(){
-    return document.querySelector(".now-playing-bar");
+const sleep = (m) => new Promise((r) => setTimeout(r, m));
+
+function selectOrThrow(selector, parent = document) {
+  const el = parent.querySelector(selector);
+  console.log(`el for selector ${selector}`, el);
+  if (!el)
+    throw new Error(`Unable to locate element using selector: ${selector}`);
+  return el;
 }
 
-function selectRootContainer(){
-    return document.querySelector(".Root");
+async function moveNowPlayingToTop() {
+  const nowPlayingBar = selectOrThrow(".now-playing-bar");
+  const rootContainer = selectOrThrow(".Root");
+
+  rootContainer.insertBefore(nowPlayingBar, rootContainer.firstChild);
+  return;
 }
 
-function moveNowPlayingToTop(){
-    const nowPlayingBar = selectNowPlayingBar();
-    const rootContainer = selectRootContainer();
+function fixSpacing(view = "column") {
+  const nowPlayingBar = selectOrThrow(".now-playing-bar");
+  const nowPlayingLeft = selectOrThrow(".now-playing-bar__left");
+  const nowPlayingCenter = selectOrThrow(".now-playing-bar__center");
+  const nowPlayingRight = selectOrThrow(".now-playing-bar__right");
 
-    let errMsg = "";
-    if (!nowPlayingBar) {
-        errMsg += "Unable to locate now playing bar element.";
+  if (view === "column") {
+    // column view
+    const nowPlayingDetails = selectOrThrow(
+      ".ellipsis-one-line",
+      nowPlayingLeft
+    );
+    const body = selectOrThrow("body");
+    body.style.minWidth = "0";
+    let newDiv = document.querySelector("#myNewDiv");
+    if (!newDiv) {
+      newDiv = document.createElement("div");
+      newDiv.id = "myNewDiv";
+      nowPlayingBar.appendChild(newDiv);
     }
-    if (!rootContainer) {
-        errMsg += `${errMsg ? '\n' : ''}Unable to locate root container element.`;
-    }
-    if (errMsg) throw new Error(errMsg);
+    newDiv.style.width = "100%";
+    newDiv.appendChild(nowPlayingLeft);
+    newDiv.appendChild(nowPlayingCenter);
+    newDiv.appendChild(nowPlayingRight);
 
-    rootContainer.insertBefore(nowPlayingBar, rootContainer.firstChild);
+    nowPlayingBar.style.height = "auto";
+    nowPlayingBar.style.justifyContent = "flex-start";
+
+    nowPlayingLeft.style.width = "auto";
+
+    nowPlayingDetails.style.flexGrow = 1;
+
+    nowPlayingCenter.style.margin = "1em 0";
+    nowPlayingCenter.style.width = "auto";
+
+    nowPlayingRight.style.width = "auto";
+    nowPlayingRight.style.justifyContent = "center";
+  } else {
+    // row view
+    nowPlayingBar.style.justifyContent = "flex-start";
+    nowPlayingLeft.style.flexGrow = 1;
+    nowPlayingCenter.style.width = "auto";
+    nowPlayingRight.style.width = "auto";
+  }
 }
 
-function main(retries=3, retryDelay=1000) {
+async function tryCallback(callback, retries = 3, retryDelay = 1000) {
+  while (retries > 0) {
     try {
-        moveNowPlayingToTop();
-    } catch(err) {
-        console.error(`Error trying to relocate Spotify now playing bar to top of page: ${err}`);
-        if (retries > 0) {
-            console.info(`Re-trying in ${retryDelay}ms...`);
-            setTimeout(() => {
-                main(--retries, retryDelay);
-            }, retryDelay)
-        }
+      await callback();
+      retries = 0;
+      return;
+    } catch (err) {
+      console.error(err);
+      if (--retries) {
+        console.info(
+          `Retries remaining, ${retries}. Re-trying in ${retryDelay}ms...`
+        );
+        await sleep(retryDelay);
+      }
     }
+  }
+  return;
+}
+
+async function main() {
+  try {
+    await tryCallback(moveNowPlayingToTop);
+    await tryCallback(fixSpacing);
+  } catch (err) {
+    console.error(`An unknown error has occurred: ${err}`);
+  }
 }
 
 main();
