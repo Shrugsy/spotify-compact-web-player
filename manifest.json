@@ -1,7 +1,7 @@
 {
-    "name": "Spotify now playing bar to top",
+    "name": "Spotify compact web player",
     "version": "1.0",
-    "description": "Re-locates the Spotify web player's 'now playing bar' to the top of the page.",
+    "description": "Re-locates the Spotify web player's 'now playing bar' to the top of the page and re-arranges to a more compact view.",
     "permissions": ["tabs", "*://open.spotify.com/*"],
     "content_scripts": [
         {
