@@ -8,19 +8,19 @@ function selectOrThrow(selector, parent = document) {
   return el;
 }
 
-async function moveNowPlayingToTop() {
-  const nowPlayingBar = selectOrThrow(".now-playing-bar");
-  const rootContainer = selectOrThrow(".Root");
+async function moveFooterToTop() {
+  const footerEl = selectOrThrow("footer");
+  const rootContainer = selectOrThrow("[data-testid='root']");
 
-  rootContainer.insertBefore(nowPlayingBar, rootContainer.firstChild);
+  rootContainer.insertBefore(footerEl, rootContainer.firstChild);
   return;
 }
 
 function fixSpacing(view = "column") {
-  const nowPlayingBar = selectOrThrow(".now-playing-bar");
-  const nowPlayingLeft = selectOrThrow(".now-playing-bar__left");
-  const nowPlayingCenter = selectOrThrow(".now-playing-bar__center");
-  const nowPlayingRight = selectOrThrow(".now-playing-bar__right");
+  const footerEl = selectOrThrow("footer");
+  const nowPlayingLeft = selectOrThrow("[data-testid='now-playing-widget']");
+  const nowPlayingCenter = selectOrThrow(".player-controls");
+  const nowPlayingRight = selectOrThrow(".ExtraControls");
 
   if (view === "column") {
     // column view
@@ -30,19 +30,24 @@ function fixSpacing(view = "column") {
     );
     const body = selectOrThrow("body");
     body.style.minWidth = "0";
+
+    // new div to hold elements
     let newDiv = document.querySelector("#myNewDiv");
     if (!newDiv) {
       newDiv = document.createElement("div");
       newDiv.id = "myNewDiv";
-      nowPlayingBar.appendChild(newDiv);
+      footerEl.appendChild(newDiv);
     }
-    newDiv.style.width = "100%";
+    newDiv.style.width = "100vw";
     newDiv.appendChild(nowPlayingLeft);
     newDiv.appendChild(nowPlayingCenter);
     newDiv.appendChild(nowPlayingRight);
 
-    nowPlayingBar.style.height = "auto";
-    nowPlayingBar.style.justifyContent = "flex-start";
+    footerEl.style.height = "auto";
+    footerEl.style.justifyContent = "flex-start";
+
+    // remove fixed height from existing element
+    footerEl.firstChild.style.height = "auto"
 
     nowPlayingLeft.style.width = "auto";
 
@@ -56,7 +61,7 @@ function fixSpacing(view = "column") {
     nowPlayingRight.style.justifyContent = "center";
   } else {
     // row view
-    nowPlayingBar.style.justifyContent = "flex-start";
+    footerEl.style.justifyContent = "flex-start";
     nowPlayingLeft.style.flexGrow = 1;
     nowPlayingCenter.style.width = "auto";
     nowPlayingRight.style.width = "auto";
@@ -84,7 +89,7 @@ async function tryCallback(callback, retries = 3, retryDelay = 1000) {
 
 async function main() {
   try {
-    await tryCallback(moveNowPlayingToTop);
+    await tryCallback(moveFooterToTop);
     await tryCallback(fixSpacing);
   } catch (err) {
     console.error(`An unknown error has occurred: ${err}`);
